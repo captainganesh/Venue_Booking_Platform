@@ -4,7 +4,6 @@ using Auth.Domain.Entities;
 using Auth.Infrastructure.Persistence;
 using Auth.Infrastructure.Repositories;
 using Auth.Infrastructure.Security;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,21 +26,37 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 
 
 // =====================================================
-// 2. REPOSITORIES
+// 2. CORS
+// =====================================================
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+
+// =====================================================
+// 3. REPOSITORIES
 // =====================================================
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 // =====================================================
-// 3. APPLICATION SERVICES
+// 4. APPLICATION SERVICES
 // =====================================================
 
 builder.Services.AddScoped<AuthService>();
 
 
 // =====================================================
-// 4. SECURITY SERVICES
+// 5. SECURITY SERVICES
 // =====================================================
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -50,7 +65,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 
 // =====================================================
-// 5. JWT AUTHENTICATION
+// 6. JWT AUTHENTICATION
 // =====================================================
 
 builder.Services
@@ -82,14 +97,14 @@ builder.Services
 
 
 // =====================================================
-// 6. AUTHORIZATION
+// 7. AUTHORIZATION
 // =====================================================
 
 builder.Services.AddAuthorization();
 
 
 // =====================================================
-// 7. CONTROLLERS / OPENAPI
+// 8. CONTROLLERS / OPENAPI
 // =====================================================
 
 builder.Services.AddControllers();
@@ -116,17 +131,7 @@ using (var scope = app.Services.CreateScope())
 
 
 // =====================================================
-// 8. HTTP PIPELINE
-// =====================================================
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
-
-// =====================================================
-// 8. HTTP PIPELINE
+// 9. HTTP PIPELINE
 // =====================================================
 
 if (app.Environment.IsDevelopment())
@@ -136,6 +141,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("Frontend");
 
 // Authentication MUST come before Authorization
 app.UseAuthentication();

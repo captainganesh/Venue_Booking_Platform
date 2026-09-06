@@ -1,9 +1,49 @@
+"use client";
+
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import "./login.css";
 
 const fieldClass =
   "w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        setError(data?.message ?? "Invalid email or password");
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="login-page flex min-h-screen items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
       <div className="relative w-full max-w-5xl overflow-hidden rounded-[32px] border border-white/60 bg-white/70 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur-xl">
@@ -73,7 +113,13 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <form className="space-y-5">
+              <form className="space-y-5" onSubmit={handleSubmit}>
+                {error && (
+                  <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                    {error}
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <label
                     htmlFor="email"
@@ -87,6 +133,8 @@ export default function LoginPage() {
                     type="email"
                     placeholder="name@company.com"
                     className={fieldClass}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -99,8 +147,8 @@ export default function LoginPage() {
                     >
                       Password
                     </label>
-                    <a
-                      href="#"
+                    
+                     <a href="#"
                       className="text-xs font-medium text-indigo-300 transition hover:text-indigo-200"
                     >
                       Forgot?
@@ -112,6 +160,8 @@ export default function LoginPage() {
                     type="password"
                     placeholder="••••••••"
                     className={fieldClass}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
@@ -131,9 +181,10 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-500 px-4 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-indigo-500/30 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+                  disabled={loading}
+                  className="w-full rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-500 px-4 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-indigo-500/30 focus:outline-none focus:ring-4 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Sign in
+                  {loading ? "Signing in…" : "Sign in"}
                 </button>
               </form>
 
@@ -164,12 +215,12 @@ export default function LoginPage() {
 
               <p className="mt-7 text-center text-sm text-slate-300">
                 Don&apos;t have an account?{" "}
-                <a
-                  href="#"
+                <Link
+                  href="/register"
                   className="font-semibold text-indigo-300 transition hover:text-indigo-200"
                 >
                   Create account
-                </a>
+                </Link>
               </p>
             </div>
           </section>

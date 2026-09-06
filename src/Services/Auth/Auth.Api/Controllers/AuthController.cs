@@ -20,6 +20,35 @@ public class AuthController : ControllerBase
         _jwtService = jwtService;
     }
 
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(
+        RegisterRequest request)
+    {
+        var user =
+            await _authService.RegisterAsync(
+                request.Email,
+                request.Password
+            );
+
+        if (user == null)
+        {
+            return Conflict(
+                new
+                {
+                    message =
+                        "A user with this email already exists"
+                }
+            );
+        }
+
+        return Ok(
+            new UserResponse(
+                user.Id,
+                user.Email
+            )
+        );
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         LoginRequest request)
