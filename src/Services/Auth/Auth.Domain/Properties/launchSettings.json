@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Auth.Domain": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

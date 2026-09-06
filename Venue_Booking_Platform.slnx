@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="docker-compose.dcproj" Id="9e2c8f2a-1b6d-4d3a-8f0b-6b8a2c9e7d41">
+    <Build />
+  </Project>
+  <Project Path="src/Services/Auth/Auth.Api/Auth.Api.csproj" Id="facec7ff-7e0e-4d39-8f5d-ef5070650c56" />
+  <Project Path="src/Services/Auth/Auth.Application/Auth.Application.csproj" Id="8892a9ce-5692-49ca-bb73-812e442b5ac9" />
+  <Project Path="src/Services/Auth/Auth.Domain/Auth.Domain.csproj" Id="13474272-7664-44c7-9fb0-ee57ac7d1c9a" />
+  <Project Path="src/Services/Auth/Auth.Infrastructure/Auth.Infrastructure.csproj" Id="2cc9a89a-a6c0-45c6-91e7-c95165d52a1f" />
+</Solution>

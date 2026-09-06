@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Auth.Infrastructure": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
